@@ -13,7 +13,7 @@ function displayLedgers(ledgers) {
           loops[entry.routeId] = {
           };
         }
-        if (entry.sender == 'me') {
+        if (entry.sender == 'reader') { // FIXME: see https://github.com/ledgerloops/ledgerloops/issues/24
           loops[entry.routeId].fside = entry.beneficiary;
         } else {
           loops[entry.routeId].cside = entry.sender;

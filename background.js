@@ -1,11 +1,20 @@
 var agent = new LedgerLoops.Agent('reader'); // FIXME: see https://github.com/ledgerloops/ledgerloops/issues/24
-browser.storage.local.get(['ledgers']).then(ledger => {
+if (typeof browser === 'undefined') {
+  browser = chrome
+}
+browser.storage.local.get(['ledgers']).then(results => {
+  const { ledgers } = results;
+  console.log('got ledgers from storage', ledgers);
+  if (ledgers === undefined) {
+    return;
+  }
   for (let peer in ledgers) {
-    console.log('inflating peer', ledger[peer]);
+    console.log('inflating peer', ledgers[peer]);
     agent.ensurePeer(peer, ledgers[peer].channel);
-    agent._peerHandlers[peer]._ledger._committed = ledger[peer].committed;
-    agent._peerHandlers[peer]._ledger._pending = ledger[peer].pending;
-    agent._peerHandlers[peer]._ledger._currentBalance = ledger[peer].balanceDetails;
+    agent._peerHandlers[peer]._channel = ledgers[peer].channel;
+    agent._peerHandlers[peer]._ledger._committed = ledgers[peer].committed;
+    agent._peerHandlers[peer]._ledger._pending = ledgers[peer].pending;
+    agent._peerHandlers[peer]._ledger._currentBalance = ledgers[peer].balanceDetails;
   }
 });
 
@@ -13,7 +22,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   console.log('got request!', request, sender);
   if (request.text) {
     agent.ensurePeer(sender.url, request.text);
-    agent._peerHandlers[peer]._channel = request.text;
+    agent._peerHandlers[sender.url]._channel = request.text;
     setInterval(() => {
       let donation = agent._peerHandlers[sender.url].create(1);
       agent._peerHandlers[sender.url].send(donation);

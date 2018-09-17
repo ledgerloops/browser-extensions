@@ -6,11 +6,11 @@ function displayLedger(ledgers, neighbor) {
     html = 'No ledger (yet) with ' + neighbor;
   } else {
     let loops = {};
-    html += `<li>Ledger with ${neighbor}: ${ledgers[neighbor].balance}<ul>`;
+    html += `<h2>${neighbor}</h2><p>Your balance: ${ledgers[neighbor].balance}</p>`;
     let k;
     for (k in ledgers[neighbor].committed) {
       const entry = ledgers[neighbor].committed[k];
-      html += `<li><strong>Entry ${k}: ${entry.msgType} ${entry.beneficiary} ${entry.amount}</strong></li>`;
+      html += `<li><strong>${k}: ${entry.amount}</strong></li>`;
       if (entry.msgType === 'COND') {
         if (!loops[entry.routeId]) {
           loops[entry.routeId] = {
@@ -25,23 +25,24 @@ function displayLedger(ledgers, neighbor) {
     }
     for (k in ledgers[neighbor].pending) {
       const entry = ledgers[neighbor].pending[k];
-      html += `<li>(entry ${k}: ${entry.msgType} ${entry.beneficiary} ${entry.amount})</li>`;
+      html += `<li>(entry ${k}: ${entry.amount})</li>`;
     }
     html += '</ul></li>';
     for (let routeId in loops) {
       html += `<h2>Loop ${routeId}:</h2><p>${loops[routeId].cside} -> me -> ${loops[routeId].fside}</p>`;
     }
   }
-  html += '<h2>Other Ledgers:</h2>';
+  html += '<h2>Other Ledgers:</h2><ul>';
   let i=0;
   let clickers = {};
   for (let k in ledgers) {
     if (k !== neighbor) {
-      html += `<li><a href="${k}" id="link-${i}">${k}</a>: ${ledgers[k].balance}<ul>`;
+      html += `<li><a href="${k}" id="link-${i}">${k}</a>: ${ledgers[k].balance}</li>`;
       clickers[i] = k;
       i++;
     }
   }
+  html += '</ul>';
   document.getElementById('ledger').innerHTML = html;
   for(i in clickers) {
     document.getElementById(`link-${i}`).onclick = function() {

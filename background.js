@@ -35,9 +35,9 @@ function pay(url, amount, recurring) {
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   console.log('got request!', request, sender);
-  if (request.text) {
-    agent.ensurePeer(sender.url, request.text);
-    agent._peerHandlers[sender.url]._channel = request.text;
+  if (request.ledgerloopsChannel) {
+    agent.ensurePeer(sender.url, request.ledgerloopsChannel);
+    agent._peerHandlers[sender.url]._channel = request.ledgerloopsChannel;
   } else {
     switch(request.cmd) {
       case 'getLedgers': {

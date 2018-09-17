@@ -1,16 +1,17 @@
-<head>
-<style>
-tr {
-  white-space: nowrap;
-}
-.results {
-  text-align: right;
-  min-width: 6em;
-  color: black;
-}
-</style>
-<script src="popup.js"></script>
-</head>
-<body>
-<div id="ledgers">hi this is the popup</div>
-</body>
+<!DOCTYPE "html">
+<html>
+  <head>
+    <style>
+    </style>
+    <script src="popup.js"></script>
+  </head>
+  <body>
+  
+  <p><input id="amount" placeholder="amount"> UCR (1 UCR ~ 0.65 USD)</p>
+  <p><input type="checkbox" id="recurring"> repeat each 5 seconds</p>
+  <p><input type="submit" value="Pay" id="pay-button"></p>
+  <p><input type="submit" value="Request" id="request-button"></p>
+  Balance: <div id="balance"></div>
+  <div id="ledger">ledger entries will be displayed here.</div>
+  </body>
+</html>

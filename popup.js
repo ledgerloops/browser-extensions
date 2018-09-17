@@ -1,8 +1,11 @@
-function displayLedgers(ledgers) {
+var currentUrl;
+
+function displayLedger(ledgers, neighbor) {
   var html = '';
-  let loops = {};
-  html += `<p>Ledgers:</p><ul>`;
-  for (var neighbor in ledgers) {
+  if (typeof ledgers[neighbor] === 'undefined') { 
+    html = 'No ledger (yet) with ' + neighbor;
+  } else {
+    let loops = {};
     html += `<li>Ledger with ${neighbor}: ${ledgers[neighbor].balance}<ul>`;
     let k;
     for (k in ledgers[neighbor].committed) {
@@ -25,20 +28,57 @@ function displayLedgers(ledgers) {
       html += `<li>(entry ${k}: ${entry.msgType} ${entry.beneficiary} ${entry.amount})</li>`;
     }
     html += '</ul></li>';
+    for (let routeId in loops) {
+      html += `<h2>Loop ${routeId}:</h2><p>${loops[routeId].cside} -> me -> ${loops[routeId].fside}</p>`;
+    }
   }
-  html += `</ul>`;
-  for (let routeId in loops) {
-    html += `<h2>Loop ${routeId}:</h2>\
-<p>${loops[routeId].cside} -> me -> ${loops[routeId].fside}</p>`;
+  html += '<h2>Other Ledgers:</h2>';
+  let i=0;
+  let clickers = {};
+  for (let k in ledgers) {
+    if (k !== neighbor) {
+      html += `<li><a href="${k}" id="link-${i}">${k}</a>: ${ledgers[k].balance}<ul>`;
+      clickers[i] = k;
+      i++;
+    }
   }
-  document.getElementById('ledgers').innerHTML = html;
+  document.getElementById('ledger').innerHTML = html;
+  for(i in clickers) {
+    document.getElementById(`link-${i}`).onclick = function() {
+      currentUrl = clickers[i]
+      chrome.tabs.update({ url: currentUrl });
+      displayLedger(ledgers, currentUrl);
+    };
+  }
 }
 
+function pay() {
+  const amount = parseFloat(document.getElementById('amount').value);
+  const recurring = document.getElementById('recurring').checked;
+  console.log('Pay!', { amount, recurring, currentUrl });
+  chrome.runtime.sendMessage({ cmd: 'pay', amount, recurring, currentUrl }, function (response) {
+    console.log('Paid!', { amount, recurring, response, currentUrl });
+  });
+};
 
+function request() {
+  const amount = parseFloat(document.getElementById('amount').value);
+  const recurring = document.getElementById('recurring').checked;
+  console.log('Requesting!', { amount, recurring, currentUrl });
+  chrome.runtime.sendMessage({ cmd: 'request', amount, recurring, currentUrl }, function (response) {
+    console.log('Requested!', { amount, recurring, response, currentUrl });
+  });
+};
 
 document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('ledgers').innerHTML = 'popup script loaded';
-  chrome.runtime.sendMessage({ cmd: 'getLedgers' }, function (response) {
-    displayLedgers(response.ledgers);
+  document.getElementById('pay-button').onclick = pay;
+  document.getElementById('request-button').onclick = request;
+  document.getElementById('ledger').innerHTML = 'popup script loaded';
+  chrome.tabs.query({ active: true, lastFocusedWindow: true }, function (tabs) {
+    currentUrl = tabs[0].url;
+    console.log({ currentUrl });
+    chrome.runtime.sendMessage({ cmd: 'getLedgers' }, function (response) {
+      displayLedger(response.ledgers, currentUrl);
+    });
   });
 });

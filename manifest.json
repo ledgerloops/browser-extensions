@@ -1,6 +1,6 @@
 {
   "name": "LedgerLoops",
-  "version": "0.8",
+  "version": "0.8.0",
   "description": "LedgerLoops agent that allows you to donate or pay on websites, using a Loops-enabled Ledger",
   "content_scripts": [
     {

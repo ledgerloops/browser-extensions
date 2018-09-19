@@ -43,19 +43,26 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       case 'getLedgers': {
         const ledgers = {};
         for (let peer in agent._peerHandlers) {
+          let committed = [];
+          for (let msgId in agent._peerHandlers[peer]._ledger._committed) {
+            committed.push(agent._peerHandlers[peer]._ledger._committed[msgId]);
+          }
+          let pending = [];
+          for (let msgId in agent._peerHandlers[peer]._ledger._pending) {
+            pending.push(agent._peerHandlers[peer]._ledger._pending[msgId]);
+          }
           ledgers[peer] = {
             channel: agent._peerHandlers[peer]._channel,
             balance: agent._peerHandlers[peer].getBalance(),
             balanceDetails: agent._peerHandlers[peer]._ledger._currentBalance,
-            committed: agent._peerHandlers[peer]._ledger._committed,
-            pending: agent._peerHandlers[peer]._ledger._pending
+            committed: committed.sort((a, b) => b.date - a.date),
+            pending: pending.sort((a, b) => b.date - a.date)
           };
         }
         browser.storage.local.set({ ledgers }).then(() => {
-          console.log('ledgers stored!');
+          console.log('ledgers stored!', ledgers);
         });
         sendResponse({ ledgers });
-        pay(sender.url, 0.0001, true); // default donation
         break;
       }
       case 'pay': {

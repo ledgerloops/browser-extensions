@@ -9,7 +9,7 @@
     }
   ],
   "background": {
-    "scripts": [ "chromeShim.js", "ledgerloops.js", "background.js" ],
+    "scripts": [ "chromeShim.js", "networkledger.js", "background.js" ],
     "persistent": false
   },
   "browser_action": {

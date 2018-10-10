@@ -34,6 +34,7 @@ function pay(url, amount, recurring) {
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   // console.log('got request!', request, sender);
   if (request.ledgerloopsChannel) {
+    console.log('client adding!', request);
     agent.addClient({
       peerName: sender.url,
       peerUrl: request.ledgerloopsChannel

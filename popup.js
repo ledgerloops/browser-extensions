@@ -19,7 +19,29 @@ function formatDate(msAgo) {
 }
 
 function displayLedger(ledger) {
-  var html = JSON.stringify(ledger);
+  let html = '<table><tr><td><h2>Balances:</h2><ul>';
+  console.log(ledger.balances);
+  for (let peerName in ledger.balances) {
+    html += `<li>${peerName}: ` +
+      ledger.balances[peerName].current + ' +[' +
+      ledger.balances[peerName].receivable + '] -[' +
+      ledger.balances[peerName].payable + ']</li>';
+  }
+  html += '</ul></td><td><h2>Transaction:</h2>';
+  console.log(html, ledger.transactions);
+  for (let channelName in ledger.transactions) {
+    html += '<h3>' + channelName + '</h3><ul>';
+    for (let msgId in ledger.transactions[channelName]) {
+      const transaction = ledger.transactions[channelName][msgId];
+      if (transaction.status == 'accepted') {
+        html += `<li>${transaction.request.msgId}: ${transaction.request.amount} (${transaction.request.unit})</li>`;
+      } else if (transaction.status == 'pending') {
+        html += `<li><em>[${transaction.request.msgId}: ${transaction.request.amount} (${transaction.request.unit})]</em></li>`;
+      }
+    }
+    html += '</ul>';
+  }
+  html += '</td></tr></table>';
   document.getElementById('ledger').innerHTML = html;
   // for(i in clickers) {
   //   document.getElementById(`link-${i}`).onclick = function() {

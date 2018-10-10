@@ -2836,9 +2836,11 @@ WebSocketClient.prototype = {
   },
 
   ensureOpen: function () {
+    console.log('ensureOpen');
     if (!this.tryingToOpen) {
       this.tryingToOpen = true;
       this.whenOpen = this.connectRetry().then(ws => {
+        console.log('ws is open!');
         this.tryingToOpen = false;
         ws.onmessage = (msg) => {
           this.msgHandler.onMessage(this.peerName, msg.data);

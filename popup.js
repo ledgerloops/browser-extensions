@@ -18,58 +18,16 @@ function formatDate(msAgo) {
   return toString('y');
 }
 
-function displayLedger(ledgers, neighbor) {
-  var html = '';
-  if (typeof ledgers[neighbor] === 'undefined') { 
-    html = 'No ledger (yet) with ' + neighbor;
-  } else {
-    let loops = {};
-    html += `<h2>${neighbor}</h2><p>Your balance: ${ledgers[neighbor].balance}</p>`;
-    let k;
-    let now = new Date().getTime();
-    for (k in ledgers[neighbor].committed) {
-      const entry = ledgers[neighbor].committed[k];
-      html += `<li><strong>${k} (${formatDate(now - entry.date)} ago): ${entry.amount}</strong></li>`;
-      if (entry.msgType === 'COND') {
-        if (!loops[entry.routeId]) {
-          loops[entry.routeId] = {
-          };
-        }
-        if (entry.sender == 'reader') { // FIXME: see https://github.com/ledgerloops/ledgerloops/issues/24
-          loops[entry.routeId].fside = entry.beneficiary;
-        } else {
-          loops[entry.routeId].cside = entry.sender;
-        }
-      }
-    }
-    for (k in ledgers[neighbor].pending) {
-      const entry = ledgers[neighbor].pending[k];
-      html += `<li>(entry ${k} since ${formatDate(now - entry.date)}: ${entry.amount})</li>`;
-    }
-    html += '</ul></li>';
-    for (let routeId in loops) {
-      html += `<h2>Loop ${routeId}:</h2><p>${loops[routeId].cside} -> me -> ${loops[routeId].fside}</p>`;
-    }
-  }
-  html += '<h2>Other Ledgers:</h2><ul>';
-  let i=0;
-  let clickers = {};
-  for (let k in ledgers) {
-    if (k !== neighbor) {
-      html += `<li><a href="${k}" id="link-${i}">${k}</a>: ${ledgers[k].balance}</li>`;
-      clickers[i] = k;
-      i++;
-    }
-  }
-  html += '</ul>';
+function displayLedger(ledger) {
+  var html = JSON.stringify(ledger);
   document.getElementById('ledger').innerHTML = html;
-  for(i in clickers) {
-    document.getElementById(`link-${i}`).onclick = function() {
-      currentUrl = clickers[i]
-      chrome.tabs.update({ url: currentUrl });
-      displayLedger(ledgers, currentUrl);
-    };
-  }
+  // for(i in clickers) {
+  //   document.getElementById(`link-${i}`).onclick = function() {
+  //     currentUrl = clickers[i]
+  //     chrome.tabs.update({ url: currentUrl });
+  //     displayLedger(ledgers, currentUrl);
+  //   };
+  // }
 }
 
 function pay() {
@@ -92,12 +50,9 @@ function request() {
 
 function updateUI() {
   console.log('updating ui!');
-  //  chrome.runtime.sendMessage({ cmd: 'pay', amount: 0.001, recurring: false, currentUrl }, function (response) {
-  //    console.log('Paid default donation!', { response, currentUrl });
-  //  });
   chrome.runtime.sendMessage({ cmd: 'getLedger' }, function (response) {
     console.log(response);
-    // displayLedger(response.ledgers, currentUrl);
+    displayLedger(response.ledger);
   });
 }
 

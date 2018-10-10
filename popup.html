@@ -10,10 +10,13 @@
   <body>
   <h3>LedgerLoops Test Net</h3>  
   <h6>Testing only. All transactions are fake.</h6>
-  <p><input id="amount" placeholder="amount"> UCR (1 UCR ~ 0.65 USD)</p>
+  <div id="paying" style="display: none">
+  <p>Site: <span id="site-name"></span>, ledger: <span id="ledger-name"></span></p>
+  <p><input id="amount" placeholder="amount" value="1"> UCR (1 UCR ~ 0.65 USD)</p>
   <p><input type="checkbox" id="recurring"> repeat every 5 seconds</p>
   <p><input type="submit" value="Pay" id="pay-button"></p>
   <p><input type="submit" value="Request" id="request-button"></p>
+  </div>
   <div id="ledger">ledger entries will be displayed here.</div>
   </body>
 </html>

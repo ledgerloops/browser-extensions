@@ -52,8 +52,17 @@ function displayLedger(ledger) {
   // }
 }
 
+function getAmount() {
+  let amount = parseFloat(document.getElementById('amount').value);
+  if (isNaN(amount)) {
+    document.getElementById('amount').value = "1.0";
+    amount = 1.0;
+  }
+  return amount;
+}
+  
 function pay() {
-  const amount = parseFloat(document.getElementById('amount').value);
+  const amount = getAmount();
   const recurring = document.getElementById('recurring').checked;
   console.log('Pay!', { amount, recurring, currentUrl });
   chrome.runtime.sendMessage({ cmd: 'pay', amount, recurring, currentUrl }, function (response) {
@@ -62,7 +71,7 @@ function pay() {
 };
 
 function request() {
-  const amount = parseFloat(document.getElementById('amount').value);
+  const amount = getAmount();
   const recurring = document.getElementById('recurring').checked;
   console.log('Requesting!', { amount, recurring, currentUrl });
   chrome.runtime.sendMessage({ cmd: 'request', amount, recurring, currentUrl }, function (response) {
@@ -78,13 +87,28 @@ function updateUI() {
   });
 }
 
+let memory = {};
 document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('pay-button').onclick = pay;
-  document.getElementById('request-button').onclick = request;
+  console.log(memory);
   document.getElementById('ledger').innerHTML = 'popup script loaded';
   chrome.tabs.query({ active: true, lastFocusedWindow: true }, function (tabs) {
     currentUrl = tabs[0].url;
     console.log({ currentUrl });
     setInterval(updateUI, 1000);
   });
+});
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  console.log('got request in popup!', request, sender);
+  if (request.ledgerloopsChannel) {
+    document.getElementById('paying').style.display = 'block';
+    document.getElementById('site-name').innerText = sender.url;
+    document.getElementById('ledger-name').innerText = request.ledgerloopsChannel;
+    document.getElementById('pay-button').onclick = pay;
+    document.getElementById('request-button').onclick = request;
+    memory = 'yes'
+  } else {
+    document.getElementById('paying').style.display = 'none';
+    memory = 'no'
+  }
 });

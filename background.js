@@ -2,24 +2,24 @@ var agent = new LedgerLoops.Agent('reader'); // FIXME: see https://github.com/le
 if (typeof browser === 'undefined') {
   browser = chrome
 }
-browser.storage.local.get(['ledgers']).then(results => {
-  const { ledgers } = results;
-  console.log('got ledgers from storage', ledgers);
-  if (ledgers === undefined) {
-    return;
-  }
-  for (let peerName in ledgers) {
-    console.log('inflating peer', ledgers[peer]);
-    agent.addClient({
-      peerName,
-      peerUrl: ledgers[peer].channel
-    });
-    // agent._peerHandlers[peer]._channel = ledgers[peer].channel;
-    // agent._peerHandlers[peer]._ledger._committed = ledgers[peer].committed;
-    // agent._peerHandlers[peer]._ledger._pending = ledgers[peer].pending;
-    // agent._peerHandlers[peer]._ledger._currentBalance = ledgers[peer].balanceDetails;
-  }
-});
+// browser.storage.local.get(['ledgers']).then(results => {
+//   const { ledgers } = results;
+//   console.log('got ledgers from storage', ledgers);
+//   if (ledgers === undefined) {
+//     return;
+//   }
+//   for (let peerName in ledgers) {
+//     console.log('inflating peer', ledgers[peer]);
+//     agent.addClient({
+//       peerName,
+//       peerUrl: ledgers[peer].channel
+//     });
+//     // agent._peerHandlers[peer]._channel = ledgers[peer].channel;
+//     // agent._peerHandlers[peer]._ledger._committed = ledgers[peer].committed;
+//     // agent._peerHandlers[peer]._ledger._pending = ledgers[peer].pending;
+//     // agent._peerHandlers[peer]._ledger._currentBalance = ledgers[peer].balanceDetails;
+//   }
+// });
 
 function pay(url, amount, recurring) {
   const doPay = () => {
@@ -40,29 +40,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     });
   } else {
     switch(request.cmd) {
-      case 'getLedgers': {
-        const ledgers = agent.getTransactions();
-        // for (let peer in agent._peerHandlers) {
-        //   let committed = [];
-        //   for (let msgId in agent._peerHandlers[peer]._ledger._committed) {
-        //     committed.push(agent._peerHandlers[peer]._ledger._committed[msgId]);
-        //   }
-        //   let pending = [];
-        //   for (let msgId in agent._peerHandlers[peer]._ledger._pending) {
-        //     pending.push(agent._peerHandlers[peer]._ledger._pending[msgId]);
-        //   }
-        //   ledgers[peer] = {
-        //     channel: agent._peerHandlers[peer]._channel,
-        //     balance: agent._peerHandlers[peer].getBalance(),
-        //     balanceDetails: agent._peerHandlers[peer]._ledger._currentBalance,
-        //     committed: committed.sort((a, b) => b.date - a.date),
-        //     pending: pending.sort((a, b) => b.date - a.date)
-        //   };
-        // }
-        browser.storage.local.set({ ledgers }).then(() => {
-          console.log('ledgers stored!', ledgers);
-        });
-        sendResponse({ ledgers });
+      case 'getLedger': {
+        const ledger = {
+          transactions: agent.getTransactions(),
+          balances: agent.getBalances()
+        };
+//        browser.storage.local.set({ ledger }).then(() => {
+//          console.log('ledger stored!', ledger);
+//        });
+        sendResponse({ ledger });
         break;
       }
       case 'pay': {

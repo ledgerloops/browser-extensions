@@ -95,8 +95,9 @@ function updateUI() {
   //  chrome.runtime.sendMessage({ cmd: 'pay', amount: 0.001, recurring: false, currentUrl }, function (response) {
   //    console.log('Paid default donation!', { response, currentUrl });
   //  });
-  chrome.runtime.sendMessage({ cmd: 'getLedgers' }, function (response) {
-    displayLedger(response.ledgers, currentUrl);
+  chrome.runtime.sendMessage({ cmd: 'getLedger' }, function (response) {
+    console.log(response);
+    // displayLedger(response.ledgers, currentUrl);
   });
 }
 

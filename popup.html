@@ -1,22 +1,32 @@
 <!DOCTYPE "html">
 <html>
   <head>
-    <style>
-      body { background-color: #efbe5b; color: #070a84; }
-      input { background-color: #070a84; color: #e2ffe8; }
-    </style>
     <script src="popup.js"></script>
+    <link rel="stylesheet" href="bootstrap.min.css" />
+    <style>
+      body { margin: 50px; }
+    </style>
   </head>
   <body>
-  <h3>LedgerLoops Test Net</h3>  
-  <h6>Testing only. All transactions are fake.</h6>
-  <div id="paying" style="display: none">
-  <p>Site: <span id="site-name"></span>, ledger: <span id="ledger-name"></span></p>
-  <p><input id="amount" placeholder="amount" value="1"> UCR (1 UCR ~ 0.65 USD)</p>
-  <p><input type="checkbox" id="recurring"> repeat every 5 seconds</p>
-  <p><input type="submit" value="Pay" id="pay-button"></p>
-  <p><input type="submit" value="Request" id="request-button"></p>
-  </div>
-  <div id="ledger">ledger entries will be displayed here.</div>
-  </body>
+   <nav class="navbar">
+     <img src="logo.png">
+     <span class="navbar-brand">
+       Network Money
+     </span>
+   </nav>
+   <h6>LedgerLoops TestNet only. All transactions are fake.</h6>
+   <div id="paying" ><!-- style="display: none" -->
+     <p>Site: <span id="site-name"></span></p>
+     <div class="container-fluid">
+       <div class="row">
+         <div class="col-sm"><input id="amount" placeholder="amount" value="1"></div>
+         <div class="col-sm">UCR (1 UCR ~ 0.65 USD)</div>
+       </div>
+     </div>
+     <p><input type="checkbox" id="recurring"> repeat every 5 seconds</p>
+     <p><input type="submit" value="Pay" id="pay-button"></p>
+     <p><input type="submit" value="Request" id="request-button"></p>
+   </div>
+   <div id="ledger">ledger entries will be displayed here.</div>
+   </body>
 </html>

@@ -19,29 +19,38 @@ function formatDate(msAgo) {
 }
 
 function displayLedger(ledger) {
-  let html = '<table><tr><td><h2>Balances:</h2><ul>';
+  let html = '<table class="table table-hover"> <thead> <tr> <th scope="col">Account</th> <th scope="col">Current</th> <th scope="col">Payable</th> <th scope="col">Receivable</th> </tr> </thead> <tbody>';
   console.log(ledger.balances);
   for (let peerName in ledger.balances) {
-    html += `<li>${peerName}: ` +
-      ledger.balances[peerName].current + ' +[' +
-      ledger.balances[peerName].receivable + '] -[' +
-      ledger.balances[peerName].payable + ']</li>';
+    if (peerName == 'bank') {
+      html += '<tr class="table-primary">';
+    } else {
+      html += '<tr class="table-active">';
+    }
+    html += `<th scope="row">${peerName}</th><td>` +
+      ledger.balances[peerName].current + '</td><td>' +
+      ledger.balances[peerName].receivable + '</td><td>' +
+      ledger.balances[peerName].payable + '</td></tr>';
   }
-  html += '</ul></td><td><h2>Transaction:</h2>';
+  html += '</tbody></table>';
+  html += '<table class="table table-hover"> <thead> <tr> <th scope="col">From</th> <th scope="col">To</th> <th scope="col">Amount</th> <th scope="col">Unit</th> <th scope="col">Date</th> </tr> </thead> <tbody>';
   console.log(html, ledger.transactions);
   for (let channelName in ledger.transactions) {
-    html += '<h3>' + channelName + '</h3><ul>';
+    const parts = channelName.split('-');
     for (let msgId in ledger.transactions[channelName]) {
       const transaction = ledger.transactions[channelName][msgId];
       if (transaction.status == 'accepted') {
-        html += `<li>${transaction.request.msgId}: ${transaction.request.amount} (${transaction.request.unit})</li>`;
+        html += '<tr class="table-active">';
       } else if (transaction.status == 'pending') {
-        html += `<li><em>[${transaction.request.msgId}: ${transaction.request.amount} (${transaction.request.unit})]</em></li>`;
+        html += '<tr class="table-primary">';
       }
+      html += `<td>${parts[0]}</td><td>${parts[1]}</td>` +
+        `<td>${transaction.request.amount}</td>` +
+        `<td>${transaction.request.unit}</td>` +
+        `<td>?</td></tr>`;
     }
-    html += '</ul>';
   }
-  html += '</td></tr></table>';
+  html += '</tbody></table>';
   document.getElementById('ledger').innerHTML = html;
   // for(i in clickers) {
   //   document.getElementById(`link-${i}`).onclick = function() {
@@ -93,22 +102,25 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('ledger').innerHTML = 'popup script loaded';
   chrome.tabs.query({ active: true, lastFocusedWindow: true }, function (tabs) {
     currentUrl = tabs[0].url;
+    document.getElementById('paying').style.display = 'block';
+    document.getElementById('site-name').innerText = currentUrl;
+    document.getElementById('pay-button').onclick = pay;
+    document.getElementById('request-button').onclick = request;
     console.log({ currentUrl });
     setInterval(updateUI, 1000);
   });
 });
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  console.log('got request in popup!', request, sender);
-  if (request.ledgerloopsChannel) {
+chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
+  console.log('got request in popup!', req, sender);
+  if (req.ledgerloopsChannel) {
     document.getElementById('paying').style.display = 'block';
     document.getElementById('site-name').innerText = sender.url;
-    document.getElementById('ledger-name').innerText = request.ledgerloopsChannel;
     document.getElementById('pay-button').onclick = pay;
     document.getElementById('request-button').onclick = request;
     memory = 'yes'
   } else {
-    document.getElementById('paying').style.display = 'none';
+    // document.getElementById('paying').style.display = 'none';
     memory = 'no'
   }
 });

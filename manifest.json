@@ -1,6 +1,6 @@
 {
   "name": "Network Money",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "LedgerLoops agent that allows you to donate or pay on websites, using a Loops-enabled Ledger",
   "content_scripts": [
     {

@@ -77,7 +77,11 @@
   </table>
   <script>
     listId =  window.location.hash.substring(1);
-    const trans = JSON.parse(localStorage.getItem('list-'+listId));
+    let trans = [];
+    try {
+      trans = JSON.parse(localStorage.getItem('list-'+listId)) || [];
+    } catch (e) {
+    }
     for (let i=0; i<trans.length; i++) {
       document.getElementById('trans-list').innerHTML += `<tr id="tr-${i}" onclick="select(${i});"> <td><img style="width:30px"  src="${trans[i].avatar}"> ${trans[i].name}</td> <td>${trans[i].description}</td> <td>${trans[i].amount}</td> <td>${trans[i].date}</td> <td>${trans[i].participants}</td> </tr>`;
     }

@@ -22,7 +22,7 @@
     const parts =  window.location.hash.substring(1).split('-');
     const listId  = parts[0];
     let transId = parseInt(parts[1]);
-    const trans = JSON.parse(localStorage.getItem('list-'+listId));
+    const trans = JSON.parse(localStorage.getItem('list-'+listId)) || [];
     if (!isNaN(transId) && trans.length  > transId) {
       ['avatar', 'name', 'description', 'amount', 'date', 'participants'].map(field  =>  {
         document.getElementById(field).value = trans[transId][field];

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Network Money</title>
+    <meta name="description" content="Network Money">
+    <link rel="author" href="https://michielbdejong.com/">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="bulma.min.css">
+    <script defer src="fontawesome.min.js"></script>
+  </head>
+  <body>
+    <h1 id="caption"></h1>
+    <p>Avatar: <input id="avatar"></p>
+    <p>Name: <input id="name"></p>
+    <p>Description: <input id="description"></p>
+    <p>Amount: <input id="amount"></p>
+    <p>Date: <input id="date"></p>
+    <p>Participants: <input id="participants"></p>
+    <p><button id="save-button">Save</button></p>
+  <script>
+    const parts =  window.location.hash.substring(1).split('-');
+    const listId  = parts[0];
+    let transId = parseInt(parts[1]);
+    const trans = JSON.parse(localStorage.getItem('list-'+listId));
+    if (!isNaN(transId) && trans.length  > transId) {
+      ['avatar', 'name', 'description', 'amount', 'date', 'participants'].map(field  =>  {
+        document.getElementById(field).value = trans[transId][field];
+      });
+    } else {
+      transId = trans.length;
+      trans.push({});
+    }
+    document.getElementById('caption').innerHTML = `Transaction ${transId} on list ${listId}:`;
+    document.getElementById('save-button').onclick = function() {
+      ['avatar', 'name', 'description', 'amount', 'date', 'participants'].map(field  =>  {
+        trans[transId][field] = document.getElementById(field).value;
+      });
+      localStorage.setItem('list-' + listId, JSON.stringify(trans));
+      window.location = 'list.html#' + listId;
+    };
+  </script>
+  </body>
+</html>

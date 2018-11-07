@@ -57,7 +57,7 @@
   </div>
   <section class="section">
     <div class="container">
-      <a class="button is-success">
+      <a class="button is-success" id="newTrans">
         Nieuwe uitgave invoeren
       </a>
     </div>
@@ -72,16 +72,19 @@
         <th>Deelnemers</th>
       </tr>
     </thead>
-    <tbody>
-      <tr>
-        <td><img style="width:30px"  src="https://avatars.wiebetaaltwat.nl/avatars/eyJpZCI6IjM5NDBmMWRiNjI5Y2NjNzQ2ZTg2YzI5NDc2NjRiMDYyNGEzZDcwOTdjY2UyMTc2YzljYTQxMzc2N2E5ZTUzMGMiLCJsZXR0ZXJzIjoiTUQifQ==.png"> Michiel</td>
-        <td>test gewijzigd</td>
-        <td>BSD 0,12</td>
-        <td>26-10-2018</td>
-        <td>Michiel</td>
-      </tr>
+    <tbody id="trans-list">
     </tbody>
   </table>
-  
+  <script>
+    listId =  window.location.hash.substring(1);
+    const trans = JSON.parse(localStorage.getItem('list-'+listId));
+    for (let i=0; i<trans.length; i++) {
+      document.getElementById('trans-list').innerHTML += `<tr id="tr-${i}" onclick="select(${i});"> <td><img style="width:30px"  src="${trans[i].avatar}"> ${trans[i].name}</td> <td>${trans[i].description}</td> <td>${trans[i].amount}</td> <td>${trans[i].date}</td> <td>${trans[i].participants}</td> </tr>`;
+    }
+    function select(id) {
+      window.location =  `trans.html#${listId}-${id}`;
+    }
+    document.getElementById('newTrans').onclick = function() { select('new'); };
+  </script>
   </body>
 </html>

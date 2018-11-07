@@ -24,7 +24,7 @@
        <div id="navbarBasicExample" class="navbar-menu">
          <div class="navbar-start">
            <a class="navbar-item">
-             Mijn lijsten
+             My lijsten
            </a>
 
         </div>
@@ -43,13 +43,13 @@
   <section class="hero is-dark is-bold">
     <div class="container">
       <h1 class="title">
-        Mijn Lijsten
+        My Lists
       </h1>
     </div>
   </section>
   <section class="section">
     <div class="container">
-      <a class="button is-success">
+      <a class="button is-success" id="newList">
         Nieuwe lijst aanmaken
       </a>
     </div>
@@ -59,17 +59,17 @@
       <tr>
         <th>Lijst</th>
         <th></th>
-        <th>Mijn saldo</th>
+        <th>My saldo</th>
         <th>Hoogste en Laagste</th>
       </tr>
     </thead>
     <tbody>
-      <tr>
+      <tr id="tr-0">
         <td><img src="https://wbw-production.s3.amazonaws.com/list_images/ab/2a/small_ab2aa660257ca7527c321b24252803b9.jpg"></td>
         <td>test</td>
         <td>BSD 0,00</td>
         <td>Michiel: BSD 0,00<br>Michiel: BSD 0,00</td>
-      </tr><tr>
+      </tr><tr id="tr-1">
         <td></td>
         <td>Malaga and beyond</td>
         <td>&euro;  0,00</td>
@@ -77,6 +77,15 @@
       </tr>
     </tbody>
   </table>
-  
+  <script>
+    function select(id) {
+      window.location =  "list.html#" + id;
+    }
+    document.getElementById('tr-0').onclick = function() { select(0); };
+    document.getElementById('tr-1').onclick = function() { select(1); };
+    document.getElementById('newList').onclick = function() {
+      window.location =  "newList.html";
+    };
+  </script>
   </body>
 </html>
